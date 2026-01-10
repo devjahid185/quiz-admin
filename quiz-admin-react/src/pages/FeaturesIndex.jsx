@@ -34,7 +34,10 @@ export default function FeaturesIndex(){
 
   const remove = async (id)=>{
     if(!confirm('Are you sure you want to delete this item?')) return;
-    try{ await ensureCsrf(); await api.delete('/admin/features/' + id); setItems(s=>s.filter(x=>x.id!==id)); }catch(e){alert('Delete failed')}
+    try{ await ensureCsrf(); await api.delete('/admin/features/' + id); setItems(s=>s.filter(x=>x.id!==id)); }catch(e){
+      const msg = e?.response?.data?.message || 'Delete failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
+    }
   }
 
   return (

@@ -33,8 +33,11 @@ export default function Profile() {
       const res = await api.put('/admin/profile/update', profileForm);
       setAdmin(res.data.data);
       setMessage('Profile information updated successfully.');
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'Profile updated' }));
     } catch (err) {
       setErrors(err.response?.data?.errors || { general: 'Save failed' });
+      const msg = err?.response?.data?.message || 'Save failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
     } finally { setSavingProfile(false); }
   };
 
@@ -46,9 +49,12 @@ export default function Profile() {
       await ensureCsrf();
       await api.put('/admin/profile/password', pwForm);
       setMessage('Password changed successfully.');
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'Password changed' }));
       setPwForm({ current_password: '', password: '', password_confirmation: '' });
     } catch (err) {
       setErrors(err.response?.data?.errors || { general: 'Save failed' });
+      const msg = err?.response?.data?.message || 'Save failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
     } finally { setSavingPassword(false); }
   };
 
@@ -87,7 +93,7 @@ export default function Profile() {
                     <label className="block text-sm font-medium text-gray-700">Full Name</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></div>
-                      <input type="text" value={profileForm.name} onChange={e=>setProfileForm({...profileForm,name:e.target.value})} className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2" required />
+                      <input type="text" value={profileForm.name} onChange={e=>setProfileForm({...profileForm,name:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3 transition duration-200 placeholder-gray-400" required />
                     </div>
                   </div>
 
@@ -95,7 +101,7 @@ export default function Profile() {
                     <label className="block text-sm font-medium text-gray-700">Email Address</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div>
-                      <input type="email" value={profileForm.email} onChange={e=>setProfileForm({...profileForm,email:e.target.value})} className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2" required />
+                      <input type="email" value={profileForm.email} onChange={e=>setProfileForm({...profileForm,email:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-3 transition duration-200 placeholder-gray-400" required />
                     </div>
                   </div>
                 </div>
@@ -116,17 +122,17 @@ export default function Profile() {
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-4">
                     <label className="block text-sm font-medium text-gray-700">Current Password</label>
-                    <input type="password" value={pwForm.current_password} onChange={e=>setPwForm({...pwForm,current_password:e.target.value})} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2" required />
+                    <input type="password" value={pwForm.current_password} onChange={e=>setPwForm({...pwForm,current_password:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200 placeholder-gray-400" required />
                   </div>
 
                   <div className="col-span-6 sm:col-span-4">
                     <label className="block text-sm font-medium text-gray-700">New Password</label>
-                    <input type="password" value={pwForm.password} onChange={e=>setPwForm({...pwForm,password:e.target.value})} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2" required />
+                    <input type="password" value={pwForm.password} onChange={e=>setPwForm({...pwForm,password:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200 placeholder-gray-400" required />
                   </div>
 
                   <div className="col-span-6 sm:col-span-4">
                     <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                    <input type="password" value={pwForm.password_confirmation} onChange={e=>setPwForm({...pwForm,password_confirmation:e.target.value})} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2" required />
+                    <input type="password" value={pwForm.password_confirmation} onChange={e=>setPwForm({...pwForm,password_confirmation:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200 placeholder-gray-400" required />
                   </div>
                 </div>
 

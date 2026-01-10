@@ -10,4 +10,14 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    host: true,
+    port: 5173,
+    // allow ngrok host to connect
+    allowedHosts: ['rema-cleansable-mirtha.ngrok-free.dev'],
+    hmr: {
+      host: 'rema-cleansable-mirtha.ngrok-free.dev',
+      protocol: 'wss',
+    },
+  },
 })

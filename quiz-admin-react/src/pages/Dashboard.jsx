@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 
-export default function Dashboard() {
+export default function Dashboard({ setAuth }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 

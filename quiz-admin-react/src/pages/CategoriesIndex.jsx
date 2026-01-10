@@ -42,7 +42,10 @@ export default function CategoriesIndex(){
       await ensureCsrf();
       await api.delete('/admin/categories/' + id);
       setCats(s=>s.filter(x=>x.id!==id));
-    }catch(e){alert('Delete failed')}
+    }catch(e){
+      const msg = e?.response?.data?.message || 'Delete failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
+    }
   }
 
   return (

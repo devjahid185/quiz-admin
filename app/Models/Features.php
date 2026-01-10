@@ -16,4 +16,10 @@ class Features extends Model
         'status',
         'serial',
     ];
+
+    // Add this relationship
+    public function featureQuizzes()
+    {
+        return $this->hasMany(FeatureQuiz::class, 'feature_id');
+    }
 }

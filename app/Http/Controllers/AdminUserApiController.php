@@ -8,14 +8,35 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminUserApiController extends Controller
 {
+    // Index method with pagination and search
     public function index(Request $request)
     {
-        $perPage = (int) $request->get('per_page', 15);
-        $users = User::latest()->paginate($perPage);
+        $query = User::orderBy('id', 'desc');
+
+        // Search Logic
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%");
+            });
+        }
+
+        // Pagination (Default 10)
+        $perPage = $request->input('per_page', 10);
+        $users = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
-            'data' => $users,
+            'data' => $users->items(), // শুধু ইউজার ডেটা
+            'pagination' => [
+                'total' => $users->total(),
+                'per_page' => $users->perPage(),
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'from' => $users->firstItem(),
+                'to' => $users->lastItem()
+            ]
         ]);
     }
 

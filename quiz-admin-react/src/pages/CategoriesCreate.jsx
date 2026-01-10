@@ -19,8 +19,12 @@ export default function CategoriesCreate(){
     try{
       await ensureCsrf();
       await api.post('/admin/categories', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'Category created' }));
       navigate('/admin/categories');
-    }catch(e){alert('Create failed')}
+    }catch(e){
+      const msg = e?.response?.data?.message || 'Create failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
+    }
   }
 
   return (

@@ -39,8 +39,12 @@ export default function CategoriesEdit(){
     try{
       await ensureCsrf();
       await api.post('/admin/categories/' + id + '?_method=PUT', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'Category updated' }));
       navigate('/admin/categories');
-    }catch(e){alert('Update failed')}
+    }catch(e){
+      const msg = e?.response?.data?.message || 'Update failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
+    }
   }
 
   const editPreviewImage = (e)=>{

@@ -34,9 +34,11 @@ export default function UsersEdit() {
     try {
       await ensureCsrf();
       await api.put('/admin/users/' + id, form);
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'User updated' }));
       navigate('/admin/users');
     } catch (err) {
-      alert('Save failed');
+      const msg = err?.response?.data?.message || 'Save failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
     } finally { setSaving(false); }
   }
 
@@ -61,12 +63,12 @@ export default function UsersEdit() {
 
             <div className="col-span-2 md:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-              <input type="text" name="name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm py-2.5 px-4 transition duration-200" />
+              <input type="text" name="name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200 placeholder-gray-400" />
             </div>
 
             <div className="col-span-2 md:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-              <input type="email" name="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm py-2.5 px-4 transition duration-200" />
+              <input type="email" name="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200 placeholder-gray-400" />
             </div>
 
             <div className="col-span-2 mt-4">
@@ -75,13 +77,13 @@ export default function UsersEdit() {
 
             <div className="col-span-2 md:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-              <input type="password" name="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm py-2.5 px-4 transition duration-200" />
+              <input type="password" name="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200 placeholder-gray-400" />
               <p className="mt-1 text-xs text-gray-500">Leave blank to keep current password.</p>
             </div>
 
             <div className="col-span-2 md:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-              <input type="password" name="password_confirmation" value={form.password_confirmation} onChange={e=>setForm({...form,password_confirmation:e.target.value})} className="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm py-2.5 px-4 transition duration-200" />
+              <input type="password" name="password_confirmation" value={form.password_confirmation} onChange={e=>setForm({...form,password_confirmation:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200 placeholder-gray-400" />
             </div>
 
             <div className="col-span-2 mt-4">
@@ -92,7 +94,7 @@ export default function UsersEdit() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Main Balance (৳)</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span className="text-gray-500 sm:text-sm">৳</span></div>
-                <input type="number" step="0.01" name="main_balance" value={form.main_balance} onChange={e=>setForm({...form,main_balance:e.target.value})} className="w-full pl-8 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm py-2.5 transition duration-200" />
+                <input type="number" step="0.01" name="main_balance" value={form.main_balance} onChange={e=>setForm({...form,main_balance:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 p-3 transition duration-200 placeholder-gray-400" />
               </div>
             </div>
 
@@ -100,7 +102,7 @@ export default function UsersEdit() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Coin Balance</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span className="text-gray-500 sm:text-sm">🪙</span></div>
-                <input type="number" name="coin_balance" value={form.coin_balance} onChange={e=>setForm({...form,coin_balance:e.target.value})} className="w-full pl-8 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm py-2.5 transition duration-200" />
+                <input type="number" name="coin_balance" value={form.coin_balance} onChange={e=>setForm({...form,coin_balance:e.target.value})} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 p-3 transition duration-200 placeholder-gray-400" />
               </div>
             </div>
           </div>

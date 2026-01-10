@@ -16,7 +16,15 @@ export default function FeaturesCreate(){
     fd.append('description', description);
     fd.append('status', status ? 1 : 0);
     if(image) fd.append('image', image);
-    try{ await ensureCsrf(); await api.post('/admin/features', fd, { headers: { 'Content-Type': 'multipart/form-data' } }); navigate('/admin/features'); }catch(e){alert('Create failed')}
+    try{
+      await ensureCsrf();
+      await api.post('/admin/features', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'Feature created' }));
+      navigate('/admin/features');
+    }catch(e){
+      const msg = e?.response?.data?.message || 'Create failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
+    }
   }
 
   return (

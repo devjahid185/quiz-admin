@@ -9,11 +9,20 @@ import UsersEdit from "./pages/UsersEdit";
 import CategoriesIndex from "./pages/CategoriesIndex";
 import CategoriesCreate from "./pages/CategoriesCreate";
 import CategoriesEdit from "./pages/CategoriesEdit";
+import SubCategoriesIndex from "./pages/SubCategoriesIndex";
+import SubCategoriesCreate from "./pages/SubCategoriesCreate";
+import SubCategoriesEdit from "./pages/SubCategoriesEdit";
+import QuizzesIndex from "./pages/QuizzesIndex";
+import QuizzesCreate from "./pages/QuizzesCreate";
+import QuizzesEdit from "./pages/QuizzesEdit";
 import Layout from "./components/Layout";
 import Profile from "./pages/Profile";
 import FeaturesIndex from "./pages/FeaturesIndex";
 import FeaturesCreate from "./pages/FeaturesCreate";
 import FeaturesEdit from "./pages/FeaturesEdit";
+import FeatureQuizIndex from "./pages/FeatureQuizIndex";
+import FeatureQuizCreate from "./pages/FeatureQuizCreate";
+import FeatureQuizEdit from "./pages/FeatureQuizEdit";
 
 function App() {
   const [auth, setAuth] = useState(null);
@@ -73,9 +82,49 @@ function App() {
         path="/admin/features/:id/edit"
         element={auth ? <Layout><FeaturesEdit /></Layout> : <Navigate to="/admin/login" />}
       />
+
+      {/* FeatureQuiz routes */}
+      <Route
+        path="/admin/feature-quizzes"
+        element={auth ? <Layout><FeatureQuizIndex /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/feature-quizzes/create"
+        element={auth ? <Layout><FeatureQuizCreate /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/feature-quizzes/:id/edit"
+        element={auth ? <Layout><FeatureQuizEdit /></Layout> : <Navigate to="/admin/login" />}
+      />
       <Route
         path="/admin/profile"
         element={auth ? <Layout><Profile /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/sub-categories"
+        element={auth ? <Layout><SubCategoriesIndex /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/sub-categories/create"
+        element={auth ? <Layout><SubCategoriesCreate /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/sub-categories/:id/edit"
+        element={auth ? <Layout><SubCategoriesEdit /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/quizzes"
+        element={auth ? <Layout><QuizzesIndex /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/quizzes/create"
+        element={auth ? <Layout><QuizzesCreate /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/quizzes/:id/edit"
+        element={auth ? <Layout><QuizzesEdit /></Layout> : <Navigate to="/admin/login" />}
       />
 
       <Route path="*" element={<Navigate to="/admin/login" />} />

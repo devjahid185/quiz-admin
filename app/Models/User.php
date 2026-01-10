@@ -24,6 +24,7 @@ class User extends Authenticatable
         'blocked',
         'main_balance',
         'coin_balance',
+        'profile_image',
     ];
 
     protected $casts = [
@@ -41,4 +42,15 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    // ✅✅ এই লাইনটি যোগ করুন (সবচেয়ে গুরুত্বপূর্ণ)
+    protected $appends = ['profile_image_url'];
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->profile_image) {
+            return asset('storage/' . $this->profile_image);
+        }
+        return null;
+    }
 }

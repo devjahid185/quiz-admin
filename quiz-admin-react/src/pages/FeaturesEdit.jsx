@@ -36,7 +36,15 @@ export default function FeaturesEdit(){
     fd.append('status', status ? 1 : 0);
     if(serial) fd.append('serial', serial);
     if(imageFile) fd.append('image', imageFile);
-    try{ await ensureCsrf(); await api.post('/admin/features/' + id + '?_method=PUT', fd, { headers: { 'Content-Type': 'multipart/form-data' } }); navigate('/admin/features'); }catch(e){alert('Update failed')}
+    try{
+      await ensureCsrf();
+      await api.post('/admin/features/' + id + '?_method=PUT', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'Feature updated' }));
+      navigate('/admin/features');
+    }catch(e){
+      const msg = e?.response?.data?.message || 'Update failed';
+      import('../notify').then(m=>m.notify({ type: 'error', message: msg }));
+    }
   }
 
   const editPreviewImage = (e)=>{

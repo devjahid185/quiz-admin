@@ -1,11 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminApiController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\AdminProfileController;
-use App\Http\Controllers\AdminApiController;
 use App\Http\Controllers\AdminUserApiController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\AdminFeatureQuizApiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,7 +37,7 @@ Route::prefix('api')->group(function () {
     Route::put('/admin/users/{user}', [AdminUserApiController::class, 'update']);
     Route::delete('/admin/users/{user}', [AdminUserApiController::class, 'destroy']);
     Route::post('/admin/users/{user}/block', [AdminUserApiController::class, 'toggleBlock']);
-    
+
     // Admin profile APIs (use session auth)
     Route::get('/admin/profile', [\App\Http\Controllers\AdminProfileApiController::class, 'show']);
     Route::put('/admin/profile/update', [\App\Http\Controllers\AdminProfileApiController::class, 'updateProfile']);
@@ -57,13 +58,39 @@ Route::prefix('api')->group(function () {
     Route::put('/admin/features/{features}', [\App\Http\Controllers\AdminFeaturesApiController::class, 'update']);
     Route::delete('/admin/features/{features}', [\App\Http\Controllers\AdminFeaturesApiController::class, 'destroy']);
     Route::post('/admin/features/sort', [\App\Http\Controllers\AdminFeaturesApiController::class, 'sort']);
+
+    // Admin sub-categories API
+    Route::get('/admin/sub-categories', [\App\Http\Controllers\AdminSubCategoryApiController::class, 'index']);
+    Route::post('/admin/sub-categories', [\App\Http\Controllers\AdminSubCategoryApiController::class, 'store']);
+    Route::get('/admin/sub-categories/{subCategory}', [\App\Http\Controllers\AdminSubCategoryApiController::class, 'show']);
+    Route::put('/admin/sub-categories/{subCategory}', [\App\Http\Controllers\AdminSubCategoryApiController::class, 'update']);
+    Route::delete('/admin/sub-categories/{subCategory}', [\App\Http\Controllers\AdminSubCategoryApiController::class, 'destroy']);
+    Route::post('/admin/sub-categories/sort', [\App\Http\Controllers\AdminSubCategoryApiController::class, 'sort']);
+
+    // Admin quizzes API
+    Route::get('/admin/quizzes', [\App\Http\Controllers\AdminQuizApiController::class, 'index']);
+    Route::post('/admin/quizzes', [\App\Http\Controllers\AdminQuizApiController::class, 'store']);
+    Route::get('/admin/quizzes/{quiz}', [\App\Http\Controllers\AdminQuizApiController::class, 'show']);
+    Route::put('/admin/quizzes/{quiz}', [\App\Http\Controllers\AdminQuizApiController::class, 'update']);
+    Route::delete('/admin/quizzes/{quiz}', [\App\Http\Controllers\AdminQuizApiController::class, 'destroy']);
+    Route::post('/admin/quizzes/sort', [\App\Http\Controllers\AdminQuizApiController::class, 'sort']);
+    Route::post('/admin/quizzes/import', [\App\Http\Controllers\AdminQuizApiController::class, 'import']);
+
+    // FeatureQuiz CRUD
+    Route::get('/feature-quizzes', [AdminFeatureQuizApiController::class, 'index']);
+    Route::post('/feature-quizzes', [AdminFeatureQuizApiController::class, 'store']);
+    Route::get('/feature-quizzes/{featureQuiz}', [AdminFeatureQuizApiController::class, 'show']);
+    Route::put('/feature-quizzes/{featureQuiz}', [AdminFeatureQuizApiController::class, 'update']);
+    Route::delete('/feature-quizzes/{featureQuiz}', [AdminFeatureQuizApiController::class, 'destroy']);
+    Route::post('/feature-quizzes/sort', [AdminFeatureQuizApiController::class, 'sort']);
+    Route::post('/feature-quizzes/import', [AdminFeatureQuizApiController::class, 'import']);
 });
 
 // Provide a simple CSRF cookie endpoint for SPA (sets XSRF-TOKEN cookie)
-    Route::get('/sanctum/csrf-cookie', function () {
-        $cookie = cookie('XSRF-TOKEN', urlencode(csrf_token()), 0, null, null, false, false);
-        return response()->json(['success' => true])->withCookie($cookie);
-    });
+Route::get('/sanctum/csrf-cookie', function () {
+    $cookie = cookie('XSRF-TOKEN', urlencode(csrf_token()), 0, null, null, false, false);
+    return response()->json(['success' => true])->withCookie($cookie);
+});
 
 Route::get('/admin/login', [AdminAuthController::class, 'loginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login']);
@@ -113,4 +140,18 @@ Route::middleware('auth:admin')->group(function () {
         '/admin/features/sort',
         [\App\Http\Controllers\Admin\FeaturesController::class, 'sort']
     )->name('admin.features.sort');
+
+    // Sub Category Management
+    Route::prefix('sub-categories')->name('admin.sub-categories.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SubCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\SubCategoryController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\SubCategoryController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [\App\Http\Controllers\SubCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [\App\Http\Controllers\SubCategoryController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\SubCategoryController::class, 'destroy'])->name('destroy');
+    });
+    Route::post(
+        '/admin/sub-categories/sort',
+        [\App\Http\Controllers\SubCategoryController::class, 'sort']
+    )->name('admin.sub-categories.sort');
 });
