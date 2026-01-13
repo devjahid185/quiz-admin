@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const defaultBase = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE
+  ? import.meta.env.VITE_API_BASE
+  : 'http://localhost:8000';
+
 const api = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: defaultBase.replace(/\/$/, '') + '/api',
   withCredentials: true,
   headers: {
     "X-Requested-With": "XMLHttpRequest",
