@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\CoinHistory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -236,9 +237,23 @@ class AuthController extends Controller
             ], 404);
         }
 
+        // Balance before transaction
+        $balanceBefore = $user->coin_balance;
+
         // কয়েন যোগ করা
         $user->coin_balance += $request->coins;
         $user->save();
+
+        // Coin History Save
+        \App\Models\CoinHistory::create([
+            'user_id' => $user->id,
+            'coins' => $request->coins,
+            'type' => 'earned',
+            'source' => 'admin',
+            'description' => 'Coins added by admin',
+            'balance_before' => $balanceBefore,
+            'balance_after' => $user->coin_balance,
+        ]);
 
         return response()->json([
             'success' => true,

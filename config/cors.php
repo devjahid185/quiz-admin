@@ -16,7 +16,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173'],
+    'allowed_origins' => [
+        'https://libratory-vonda-impulsive.ngrok-free.dev', // আপনার ফ্রন্টএন্ড URL
+        'http://localhost:5173', // লোকালহোস্টও রাখতে পারেন
+    ],
 
     'allowed_origins_patterns' => [],
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import api, { ensureCsrf, storageUrl } from '../api';
+import ImageCropperModal from '../components/ImageCropperModal';
 
 export default function FeaturesEdit(){
   const { id } = useParams();
@@ -9,9 +10,14 @@ export default function FeaturesEdit(){
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState(1);
   const [serial, setSerial] = useState('');
-  const [imageFile, setImageFile] = useState(null);
-  const [existingImage, setExistingImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  
+  // ইমেজ স্টেট
+  const [imageFile, setImageFile] = useState(null); // নতুন ফাইল
+  const [existingImage, setExistingImage] = useState(null); // সার্ভার ইমেজ পাথ
+  const [tempImageSrc, setTempImageSrc] = useState(null); // ক্রপিং সোর্স
+  const [previewUrl, setPreviewUrl] = useState(null); // ডিসপ্লে প্রিভিউ
+  const [showCropper, setShowCropper] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(()=>{
@@ -28,6 +34,26 @@ export default function FeaturesEdit(){
     return ()=> mounted = false;
   },[id]);
 
+  const onFileSelect = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        setTempImageSrc(reader.result);
+        setShowCropper(true);
+      });
+      reader.readAsDataURL(file);
+      e.target.value = null;
+    }
+  };
+
+  const handleCropComplete = (compressedFile, preview) => {
+    setImageFile(compressedFile);
+    setPreviewUrl(preview);
+    setShowCropper(false);
+    setTempImageSrc(null);
+  };
+
   const submit = async (e)=>{
     e.preventDefault();
     const fd = new FormData();
@@ -36,10 +62,11 @@ export default function FeaturesEdit(){
     fd.append('status', status ? 1 : 0);
     if(serial) fd.append('serial', serial);
     if(imageFile) fd.append('image', imageFile);
+    
     try{
       await ensureCsrf();
       await api.post('/admin/features/' + id + '?_method=PUT', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-      import('../notify').then(m=>m.notify({ type: 'success', message: 'Feature updated' }));
+      import('../notify').then(m=>m.notify({ type: 'success', message: 'Feature updated successfully' }));
       navigate('/admin/features');
     }catch(e){
       const msg = e?.response?.data?.message || 'Update failed';
@@ -47,19 +74,19 @@ export default function FeaturesEdit(){
     }
   }
 
-  const editPreviewImage = (e)=>{
-    const file = e.target.files[0];
-    if(!file) return setPreview(null);
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onload = ()=> setPreview(reader.result);
-    reader.readAsDataURL(file);
-  }
-
   if(loading) return <div className="p-6">Loading...</div>
 
   return (
     <div className="container mx-auto py-8 max-w-3xl">
+      {/* ক্রপার মডাল */}
+      {showCropper && (
+        <ImageCropperModal 
+          imageSrc={tempImageSrc}
+          onCancel={() => { setShowCropper(false); setTempImageSrc(null); }}
+          onCropComplete={handleCropComplete}
+        />
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Edit Feature: <span className="text-indigo-600">{title}</span></h1>
         <Link to="/admin/features" className="text-sm text-gray-600 hover:text-indigo-600 font-medium flex items-center transition duration-150">
@@ -107,17 +134,25 @@ export default function FeaturesEdit(){
               <div className="md:col-span-1">
                   <label className="block mb-2 text-sm font-semibold text-gray-700">Image Preview</label>
                   <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm inline-block">
+                      {/* প্রিভিউ লজিক: নতুন ক্রপ করা ইমেজ > পুরনো ইমেজ > ডিফল্ট প্লেসহোল্ডার */}
                       <img id="edit-image-preview" 
-                           src={preview ? preview : (existingImage ? storageUrl(existingImage) : 'https://via.placeholder.com/150?text=No+Image')} 
-                           className="h-32 w-32 object-cover rounded-md" alt="" />
+                           src={previewUrl ? previewUrl : (existingImage ? storageUrl(existingImage) : 'https://via.placeholder.com/150?text=No+Image')} 
+                           className="h-32 w-auto object-cover rounded-md" alt="" />
                   </div>
               </div>
 
               <div className="md:col-span-2">
                   <label className="block mb-2 text-sm font-semibold text-gray-700">Update Image</label>
-                      <input type="file" name="image" accept="image/*" onChange={editPreviewImage}
-                         className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:border-indigo-500 p-2.5" />
-                  <p className="mt-1 text-xs text-gray-500">Leave empty to keep current image. Supported: JPG, PNG, GIF.</p>
+                  <div 
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition hover:border-indigo-400 relative"
+                  >
+                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg className="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p className="text-sm text-gray-500">Click to replace image</p>
+                     </div>
+                     <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*" onChange={onFileSelect} />
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">Auto cropped & compressed. Leave empty to keep current.</p>
               </div>
           </div>
 

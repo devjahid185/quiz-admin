@@ -144,6 +144,13 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
             <span className="mx-3 font-medium">Features (Tags)</span>
           </NavLink>
 
+          <NavLink to="/admin/questions" className={linkClass} onClick={() => setMobileOpen && setMobileOpen(false)}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="mx-3 font-medium">Questions</span>
+          </NavLink>
+
           {/* --- ORGANIZATION SECTION --- */}
           <div className={sectionHeaderClass}>Organization</div>
 
@@ -164,11 +171,40 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           {/* --- SYSTEM SECTION --- */}
           <div className={sectionHeaderClass}>Administration</div>
 
+          <NavLink to="/admin/leaderboard" className={linkClass} onClick={() => setMobileOpen && setMobileOpen(false)}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+            <span className="mx-3 font-medium">Leaderboard</span>
+          </NavLink>
+
           <NavLink to="/admin/users" className={linkClass} onClick={() => setMobileOpen && setMobileOpen(false)}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
             <span className="mx-3 font-medium">Users</span>
+          </NavLink>
+
+          <NavLink to="/admin/coin-conversion" className={linkClass} onClick={() => setMobileOpen && setMobileOpen(false)}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <span className="mx-3 font-medium">Coin Conversion</span>
+          </NavLink>
+
+          <NavLink to="/admin/withdrawals" className={linkClass} onClick={() => setMobileOpen && setMobileOpen(false)}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="mx-3 font-medium">Withdrawals</span>
+          </NavLink>
+
+          <NavLink to="/admin/withdrawal-settings" className={linkClass} onClick={() => setMobileOpen && setMobileOpen(false)}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="mx-3 font-medium">Withdrawal Settings</span>
           </NavLink>
 
           <NavLink to="/admin/settings" className={linkClass} onClick={() => setMobileOpen && setMobileOpen(false)}>

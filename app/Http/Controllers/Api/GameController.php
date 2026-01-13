@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\CoinHistory;
 use App\Events\GameStarted;
 use App\Events\PlayerJoined;
 use Illuminate\Http\Request;
@@ -199,13 +200,29 @@ class GameController extends Controller
         // উত্তর চেক করা
         if ($question && $question->correct_option == $request->selected_option) {
             $isCorrect = true;
-            $coinsEarned = $question->points;
+            $coinsEarned = $question->points ?? 10; // Default 10 if points not set
 
-            // ১. ইউজারের মেইন ব্যালেন্স আপডেট (Coin Update)
+            // ১. Balance before transaction
+            $balanceBefore = $user->coin_balance;
+
+            // ২. ইউজারের মেইন ব্যালেন্স আপডেট (Coin Update)
             $user->coin_balance += $coinsEarned;
             $user->save();
 
-            // ২. রুমের স্কোর আপডেট (Leaderboard এর জন্য)
+            // ৩. Coin History Save
+            CoinHistory::create([
+                'user_id' => $user->id,
+                'coins' => $coinsEarned,
+                'type' => 'earned',
+                'source' => 'quiz',
+                'description' => 'Earned from answering question correctly',
+                'reference_id' => $question->id,
+                'reference_type' => 'Question',
+                'balance_before' => $balanceBefore,
+                'balance_after' => $user->coin_balance,
+            ]);
+
+            // ৪. রুমের স্কোর আপডেট (Leaderboard এর জন্য)
             DB::table('room_players')
                 ->where('user_id', $user->id)
                 ->increment('score', $coinsEarned);

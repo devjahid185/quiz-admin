@@ -23,6 +23,7 @@ Route::prefix('api')->group(function () {
     Route::post('/admin/login', [AdminApiController::class, 'login']);
     Route::get('/admin/check', [AdminApiController::class, 'check']);
     Route::post('/admin/logout', [AdminApiController::class, 'logout']);
+    Route::get('/admin/dashboard/statistics', [\App\Http\Controllers\AdminDashboardApiController::class, 'statistics']);
 
     // Provide a simple CSRF cookie endpoint for SPA (sets XSRF-TOKEN cookie)
     Route::get('/sanctum/csrf-cookie', function () {
@@ -84,6 +85,44 @@ Route::prefix('api')->group(function () {
     Route::delete('/feature-quizzes/{featureQuiz}', [AdminFeatureQuizApiController::class, 'destroy']);
     Route::post('/feature-quizzes/sort', [AdminFeatureQuizApiController::class, 'sort']);
     Route::post('/feature-quizzes/import', [AdminFeatureQuizApiController::class, 'import']);
+
+    // Admin Questions API
+    Route::get('/admin/questions', [\App\Http\Controllers\AdminQuestionApiController::class, 'index']);
+    Route::post('/admin/questions', [\App\Http\Controllers\AdminQuestionApiController::class, 'store']);
+    Route::get('/admin/questions/{question}', [\App\Http\Controllers\AdminQuestionApiController::class, 'show']);
+    Route::put('/admin/questions/{question}', [\App\Http\Controllers\AdminQuestionApiController::class, 'update']);
+    Route::delete('/admin/questions/{question}', [\App\Http\Controllers\AdminQuestionApiController::class, 'destroy']);
+    Route::post('/admin/questions/import', [\App\Http\Controllers\AdminQuestionApiController::class, 'import']);
+
+    // Admin Leaderboard API
+    Route::get('/admin/leaderboard', [\App\Http\Controllers\AdminLeaderboardApiController::class, 'index']);
+    Route::get('/admin/leaderboard/coin-history', [\App\Http\Controllers\AdminLeaderboardApiController::class, 'coinHistory']);
+
+    // Admin Coin Conversion Settings API
+    Route::get('/admin/coin-conversion', [\App\Http\Controllers\AdminCoinConversionApiController::class, 'index']);
+    Route::get('/admin/coin-conversion/active', [\App\Http\Controllers\AdminCoinConversionApiController::class, 'getActive']);
+    Route::post('/admin/coin-conversion', [\App\Http\Controllers\AdminCoinConversionApiController::class, 'store']);
+    Route::put('/admin/coin-conversion/{coinConversionSetting}', [\App\Http\Controllers\AdminCoinConversionApiController::class, 'update']);
+    Route::delete('/admin/coin-conversion/{coinConversionSetting}', [\App\Http\Controllers\AdminCoinConversionApiController::class, 'destroy']);
+    Route::post('/admin/coin-conversion/{coinConversionSetting}/toggle-active', [\App\Http\Controllers\AdminCoinConversionApiController::class, 'toggleActive']);
+
+    // Admin Withdrawal Management API
+    Route::get('/admin/withdrawal/settings', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'getSettings']);
+    Route::get('/admin/withdrawal/settings/active', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'getActiveSetting']);
+    Route::post('/admin/withdrawal/settings', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'storeSettings']);
+    Route::put('/admin/withdrawal/settings/{withdrawalSetting}', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'updateSettings']);
+    Route::delete('/admin/withdrawal/settings/{withdrawalSetting}', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'deleteSettings']);
+    Route::post('/admin/withdrawal/settings/{withdrawalSetting}/toggle-active', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'toggleActiveSettings']);
+    
+    Route::get('/admin/withdrawal/requests', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'getRequests']);
+    Route::get('/admin/withdrawal/request/{id}', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'getRequestDetails']);
+    Route::post('/admin/withdrawal/request/{id}/approve', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'approveRequest']);
+    Route::post('/admin/withdrawal/request/{id}/reject', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'rejectRequest']);
+    Route::post('/admin/withdrawal/request/{id}/complete', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'completeRequest']);
+    Route::put('/admin/withdrawal/request/{id}/status', [\App\Http\Controllers\AdminWithdrawalApiController::class, 'updateStatus']);
+
+    // Admin alerts (polling)
+    Route::get('/admin/alerts', [\App\Http\Controllers\AdminAlertsApiController::class, 'index']);
 });
 
 // Provide a simple CSRF cookie endpoint for SPA (sets XSRF-TOKEN cookie)

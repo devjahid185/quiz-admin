@@ -23,6 +23,13 @@ import FeaturesEdit from "./pages/FeaturesEdit";
 import FeatureQuizIndex from "./pages/FeatureQuizIndex";
 import FeatureQuizCreate from "./pages/FeatureQuizCreate";
 import FeatureQuizEdit from "./pages/FeatureQuizEdit";
+import QuestionsIndex from "./pages/QuestionsIndex";
+import QuestionsCreate from "./pages/QuestionsCreate";
+import QuestionsEdit from "./pages/QuestionsEdit";
+import Leaderboard from "./pages/Leaderboard";
+import CoinConversionSettings from "./pages/CoinConversionSettings";
+import WithdrawalManagement from "./pages/WithdrawalManagement";
+import WithdrawalSettings from "./pages/WithdrawalSettings";
 
 function App() {
   const [auth, setAuth] = useState(null);
@@ -125,6 +132,39 @@ function App() {
       <Route
         path="/admin/quizzes/:id/edit"
         element={auth ? <Layout><QuizzesEdit /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/questions"
+        element={auth ? <Layout><QuestionsIndex /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/questions/create"
+        element={auth ? <Layout><QuestionsCreate /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/questions/:id/edit"
+        element={auth ? <Layout><QuestionsEdit /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/leaderboard"
+        element={auth ? <Layout><Leaderboard /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/coin-conversion"
+        element={auth ? <Layout><CoinConversionSettings /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/withdrawals"
+        element={auth ? <Layout><WithdrawalManagement /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/withdrawal-settings"
+        element={auth ? <Layout><WithdrawalSettings /></Layout> : <Navigate to="/admin/login" />}
       />
 
       <Route path="*" element={<Navigate to="/admin/login" />} />

@@ -53,4 +53,20 @@ class User extends Authenticatable
         }
         return null;
     }
+
+    // Relationships
+    public function coinHistory()
+    {
+        return $this->hasMany(CoinHistory::class);
+    }
+
+    public function balanceHistory()
+    {
+        return $this->hasMany(BalanceHistory::class);
+    }
+
+    public function withdrawalRequests()
+    {
+        return $this->hasMany(WithdrawalRequest::class);
+    }
 }
