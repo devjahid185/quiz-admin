@@ -24,7 +24,7 @@ function App() {
 
       <Route
         path="/admin/dashboard"
-        element={auth ? <Dashboard setAuth={setAuth} /> : <Navigate to="/admin/login" />}
+        element={auth ? <Dashboard /> : <Navigate to="/admin/login" />}
       />
 
       <Route path="*" element={<Navigate to="/admin/login" />} />

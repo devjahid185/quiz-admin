@@ -16,3 +16,29 @@ Broadcast::channel('quiz.{roomCode}', function ($user, $roomCode) {
         'email' => $user->email
     ];
 });
+
+// ✅ User-specific notification channel (for invitations, request responses)
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+
+// ✅ Chat channels
+Broadcast::channel('chat.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+
+Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
+    // Verify user is part of this conversation
+    $conversation = \Illuminate\Support\Facades\DB::table('conversations')
+        ->where('id', $conversationId)
+        ->where(function($query) use ($user) {
+            $query->where('user1_id', $user->id)
+                  ->orWhere('user2_id', $user->id);
+        })
+        ->exists();
+    
+    return $conversation ? [
+        'id' => $user->id,
+        'name' => $user->name,
+    ] : false;
+});

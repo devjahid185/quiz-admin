@@ -14,7 +14,8 @@ class CustomCors
         // আপনার Ngrok URL এবং Localhost দুটোই দিন
         $allowedOrigins = [
             'http://localhost:5173',
-            'https://libratory-vonda-impulsive.ngrok-free.dev', 
+            'https://libratory-vonda-impulsive.ngrok-free.dev',
+            'https://quiz-admin-new.netlify.app/', 
         ];
 
         // যদি অরিজিন লিস্টে থাকে, তবে সেটা সেট করব, নাহলে যা আছে তাই (বা নাল)

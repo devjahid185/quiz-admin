@@ -14,8 +14,7 @@ Route::get('/', function () {
 
 // CSRF cookie endpoint for SPA clients (root path). This sets the XSRF-TOKEN cookie.
 Route::get('/sanctum/csrf-cookie', function () {
-    $cookie = cookie('XSRF-TOKEN', csrf_token(), 0, null, null, false, false);
-    return response()->json(['success' => true])->withCookie($cookie);
+    return response()->json(['success' => true]);
 });
 
 // API endpoints used by the React admin frontend (use web/session auth)
@@ -27,8 +26,7 @@ Route::prefix('api')->group(function () {
 
     // Provide a simple CSRF cookie endpoint for SPA (sets XSRF-TOKEN cookie)
     Route::get('/sanctum/csrf-cookie', function () {
-        $cookie = cookie('XSRF-TOKEN', urlencode(csrf_token()), 0, null, null, false, false);
-        return response()->json(['success' => true])->withCookie($cookie);
+        return response()->json(['success' => true]);
     });
 
     // Admin users API
@@ -38,6 +36,23 @@ Route::prefix('api')->group(function () {
     Route::put('/admin/users/{user}', [AdminUserApiController::class, 'update']);
     Route::delete('/admin/users/{user}', [AdminUserApiController::class, 'destroy']);
     Route::post('/admin/users/{user}/block', [AdminUserApiController::class, 'toggleBlock']);
+    Route::get('/admin/users/{user}/history', [AdminUserApiController::class, 'history']);
+
+    // Admin banners API
+    Route::get('/admin/banners', [\App\Http\Controllers\AdminBannerApiController::class, 'index']);
+    Route::post('/admin/banners', [\App\Http\Controllers\AdminBannerApiController::class, 'store']);
+    Route::get('/admin/banners/{banner}', [\App\Http\Controllers\AdminBannerApiController::class, 'show']);
+    Route::put('/admin/banners/{banner}', [\App\Http\Controllers\AdminBannerApiController::class, 'update']);
+    Route::delete('/admin/banners/{banner}', [\App\Http\Controllers\AdminBannerApiController::class, 'destroy']);
+    Route::post('/admin/banners/{banner}/toggle', [\App\Http\Controllers\AdminBannerApiController::class, 'toggleActive']);
+    
+    // Admin promotional images
+    Route::get('/admin/promotional-images', [\App\Http\Controllers\AdminPromotionalImageApiController::class, 'index']);
+    Route::post('/admin/promotional-images', [\App\Http\Controllers\AdminPromotionalImageApiController::class, 'store']);
+    Route::get('/admin/promotional-images/{promotionalImage}', [\App\Http\Controllers\AdminPromotionalImageApiController::class, 'show']);
+    Route::put('/admin/promotional-images/{promotionalImage}', [\App\Http\Controllers\AdminPromotionalImageApiController::class, 'update']);
+    Route::delete('/admin/promotional-images/{promotionalImage}', [\App\Http\Controllers\AdminPromotionalImageApiController::class, 'destroy']);
+    Route::post('/admin/promotional-images/{promotionalImage}/toggle', [\App\Http\Controllers\AdminPromotionalImageApiController::class, 'toggleActive']);
 
     // Admin profile APIs (use session auth)
     Route::get('/admin/profile', [\App\Http\Controllers\AdminProfileApiController::class, 'show']);
@@ -97,6 +112,11 @@ Route::prefix('api')->group(function () {
     // Admin Leaderboard API
     Route::get('/admin/leaderboard', [\App\Http\Controllers\AdminLeaderboardApiController::class, 'index']);
     Route::get('/admin/leaderboard/coin-history', [\App\Http\Controllers\AdminLeaderboardApiController::class, 'coinHistory']);
+
+    // Admin Notifications API
+    Route::get('/admin/notifications/users', [\App\Http\Controllers\AdminNotificationApiController::class, 'getUsersWithTokens']);
+    Route::post('/admin/notifications/send', [\App\Http\Controllers\AdminNotificationApiController::class, 'sendNotification']);
+    Route::post('/admin/notifications/send-to-all', [\App\Http\Controllers\AdminNotificationApiController::class, 'sendToAll']);
 
     // Admin Coin Conversion Settings API
     Route::get('/admin/coin-conversion', [\App\Http\Controllers\AdminCoinConversionApiController::class, 'index']);

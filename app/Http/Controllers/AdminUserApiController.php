@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\BalanceHistory;
+use App\Models\CoinHistory;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserApiController extends Controller
@@ -99,5 +101,49 @@ class AdminUserApiController extends Controller
         $user->blocked = !$user->blocked;
         $user->save();
         return response()->json(['success' => true, 'data' => $user]);
+    }
+
+    // Return combined balance and coin history for a user
+    public function history(User $user)
+    {
+        $balance = BalanceHistory::where('user_id', $user->id)
+            ->get()
+            ->map(function($b){
+                return [
+                    'id' => $b->id,
+                    'category' => 'balance',
+                    'type' => $b->type,
+                    'amount' => (string) $b->amount,
+                    'source' => $b->source,
+                    'description' => $b->description,
+                    'balance_before' => (string) $b->balance_before,
+                    'balance_after' => (string) $b->balance_after,
+                    'created_at' => $b->created_at,
+                ];
+            });
+
+        $coins = CoinHistory::where('user_id', $user->id)
+            ->get()
+            ->map(function($c){
+                return [
+                    'id' => $c->id,
+                    'category' => 'coin',
+                    'type' => $c->type,
+                    'coins' => $c->coins,
+                    'source' => $c->source,
+                    'description' => $c->description,
+                    'balance_before' => $c->balance_before,
+                    'balance_after' => $c->balance_after,
+                    'created_at' => $c->created_at,
+                ];
+            });
+
+        // Merge and sort by created_at desc
+        $merged = $balance->concat($coins)
+            ->sortByDesc('created_at')
+            ->values()
+            ->all();
+
+        return response()->json(['success' => true, 'data' => $merged]);
     }
 }

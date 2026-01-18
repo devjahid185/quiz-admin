@@ -25,6 +25,9 @@ class User extends Authenticatable
         'main_balance',
         'coin_balance',
         'profile_image',
+        'phone_number',
+        'is_online',
+        'last_seen_at',
     ];
 
     protected $casts = [
@@ -68,5 +71,10 @@ class User extends Authenticatable
     public function withdrawalRequests()
     {
         return $this->hasMany(WithdrawalRequest::class);
+    }
+
+    public function deviceTokens()
+    {
+        return $this->hasMany(DeviceToken::class);
     }
 }

@@ -17,11 +17,17 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'https://libratory-vonda-impulsive.ngrok-free.dev', // আপনার ফ্রন্টএন্ড URL
-        'http://localhost:5173', // লোকালহোস্টও রাখতে পারেন
+        'https://rema-cleansable-mirtha.ngrok-free.dev',
+        'https://investigatory-shayla-unstalemated.ngrok-free.dev',
+        'http://localhost:5173',
+        'https://quiz-admin-new.netlify.app',
+        'https://quizs-admin.netlify.app',
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https://.*\.netlify\.app$#',
+        '#^https://.*\.ngrok-free\.dev$#',
+    ],
 
     'allowed_headers' => ['*'],
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\CoinHistory;
+use App\Models\DeviceToken;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +42,7 @@ class AuthController extends Controller
         // Send OTP Email
         Mail::raw("Your account verification OTP is: $otp", function ($m) use ($user) {
             $m->to($user->email)
-              ->subject('Verify Your Account');
+                ->subject('Verify Your Account');
         });
 
         return response()->json([
@@ -113,6 +114,11 @@ class AuthController extends Controller
             ], 403);
         }
 
+        // Update online status
+        $user->is_online = true;
+        $user->last_seen_at = now();
+        $user->save();
+
         return response()->json([
             'success' => true,
             'user'    => $user,
@@ -136,7 +142,7 @@ class AuthController extends Controller
 
         Mail::raw("Password reset OTP: $otp", function ($m) use ($user) {
             $m->to($user->email)
-              ->subject('Reset Password OTP');
+                ->subject('Reset Password OTP');
         });
 
         return response()->json([
@@ -179,8 +185,17 @@ class AuthController extends Controller
     }
 
     // ================= LOGOUT =================
-    public function logout()
+    public function logout(Request $request)
     {
+        $user = $request->user();
+
+        // Update online status
+        if ($user) {
+            $user->is_online = false;
+            $user->last_seen_at = now();
+            $user->save();
+        }
+
         Auth::logout();
         return response()->json(['success' => true]);
     }
@@ -189,7 +204,7 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         $user = $request->user();
-        
+
         // রেসপন্সে ইমেজের ফুল URL পাঠানোর জন্য
         $userData = $user->toArray();
         $userData['profile_image_url'] = $user->profile_image ? asset('storage/' . $user->profile_image) : null;
@@ -304,7 +319,7 @@ class AuthController extends Controller
     {
         // ১. ইমেইল ভ্যালিডেশন অবশ্যই লাগবে ইউজার চেনার জন্য
         $request->validate([
-            'email' => 'required|email', 
+            'email' => 'required|email',
             'name'  => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -330,7 +345,7 @@ class AuthController extends Controller
             if ($user->profile_image && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->profile_image)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_image);
             }
-            
+
             // নতুন ইমেজ সেভ করা
             $imageName = time() . '_' . uniqid() . '.' . $request->file('image')->getClientOriginalExtension();
             $path = $request->file('image')->storeAs('profile_images', $imageName, 'public');
@@ -347,6 +362,61 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Profile updated successfully',
             'user'    => $userData,
+        ]);
+    }
+
+    // ================= UPDATE ONLINE STATUS =================
+    public function updateOnlineStatus(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'is_online' => 'required|boolean'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $user->is_online = $request->is_online;
+        $user->last_seen_at = now();
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Online status updated',
+            'is_online' => $user->is_online,
+            'last_seen_at' => $user->last_seen_at,
+        ]);
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found']);
+        }
+
+        // টোকেনটি সেভ বা আপডেট করা হচ্ছে
+        // updateOrCreate চেক করবে এই টোকেনটি ইতিমধ্যে আছে কিনা
+        DeviceToken::updateOrCreate(
+            ['token' => $request->token], // চেক করবে টোকেন দিয়ে
+            ['user_id' => $user->id]      // আপডেট করবে ইউজার আইডি (যদি ইউজার চেঞ্জ হয়)
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Token updated successfully'
         ]);
     }
 }

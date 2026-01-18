@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "./api";
+import api, { ensureCsrf } from "./api";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UsersIndex from "./pages/UsersIndex";
 import UsersCreate from "./pages/UsersCreate";
 import UsersEdit from "./pages/UsersEdit";
+import UserDetails from "./pages/UserDetails";
 import CategoriesIndex from "./pages/CategoriesIndex";
 import CategoriesCreate from "./pages/CategoriesCreate";
 import CategoriesEdit from "./pages/CategoriesEdit";
@@ -30,14 +31,43 @@ import Leaderboard from "./pages/Leaderboard";
 import CoinConversionSettings from "./pages/CoinConversionSettings";
 import WithdrawalManagement from "./pages/WithdrawalManagement";
 import WithdrawalSettings from "./pages/WithdrawalSettings";
+import BannersIndex from "./pages/BannersIndex";
+import PromotionalImagesIndex from "./pages/PromotionalImagesIndex";
+import SendNotification from "./pages/SendNotification";
 
 function App() {
   const [auth, setAuth] = useState(null);
 
   useEffect(() => {
-    api.get("/admin/check")
-      .then(() => setAuth(true))
-      .catch(() => setAuth(false));
+    // Check auth status on app load/refresh
+    const checkAuth = async () => {
+      try {
+        // Check if user is authenticated via session (withCredentials already set in api.js)
+        const response = await api.get("/admin/check");
+        
+        // Check response status and data
+        if (response?.status === 200) {
+          // If response has authenticated: true or admin data, user is authenticated
+          if (response.data?.authenticated === true || response.data?.admin) {
+            setAuth(true);
+            return;
+          }
+        }
+        setAuth(false);
+      } catch (error) {
+        // If 401 or 403, user is not authenticated
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          setAuth(false);
+        } else {
+          // Network error or other issue
+          console.error('Auth check error:', error?.response?.status || error?.message);
+          // Set to false only if we have a response (clear auth failure)
+          setAuth(error?.response ? false : (prev => prev !== null ? prev : false));
+        }
+      }
+    };
+
+    checkAuth();
   }, []);
 
   if (auth === null) return null;
@@ -64,6 +94,10 @@ function App() {
       <Route
         path="/admin/users/:id/edit"
         element={auth ? <Layout><UsersEdit /></Layout> : <Navigate to="/admin/login" />}
+      />
+      <Route
+        path="/admin/users/:id"
+        element={auth ? <Layout><UserDetails /></Layout> : <Navigate to="/admin/login" />}
       />
       <Route
         path="/admin/categories"
@@ -165,6 +199,21 @@ function App() {
       <Route
         path="/admin/withdrawal-settings"
         element={auth ? <Layout><WithdrawalSettings /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/banners"
+        element={auth ? <Layout><BannersIndex /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/promotional-images"
+        element={auth ? <Layout><PromotionalImagesIndex /></Layout> : <Navigate to="/admin/login" />}
+      />
+
+      <Route
+        path="/admin/notifications"
+        element={auth ? <Layout><SendNotification /></Layout> : <Navigate to="/admin/login" />}
       />
 
       <Route path="*" element={<Navigate to="/admin/login" />} />

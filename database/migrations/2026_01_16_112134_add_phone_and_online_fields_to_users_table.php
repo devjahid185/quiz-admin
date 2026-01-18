@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('phone_number')->nullable()->after('email');
+            $table->boolean('is_online')->default(false)->after('phone_number');
+            $table->timestamp('last_seen_at')->nullable()->after('is_online');
+            
+            // Index for phone search
+            $table->index('phone_number');
+            $table->index('is_online');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropIndex(['phone_number']);
+            $table->dropIndex(['is_online']);
+            $table->dropColumn(['phone_number', 'is_online', 'last_seen_at']);
+        });
+    }
+};

@@ -11,13 +11,17 @@ class AdminApiController extends Controller
     {
         $cred = $request->only('email', 'password');
 
-        if (Auth::guard('admin')->attempt($cred)) {
+        if (Auth::guard('admin')->attempt($cred, $request->filled('remember'))) {
             $request->session()->regenerate();
-
+            
+            // Get session cookie name
+            $sessionName = config('session.cookie');
+            
+            // Return response with explicit cookie setting (Laravel handles this, but explicit helps)
             return response()->json([
                 'success' => true,
                 'admin' => Auth::guard('admin')->user()
-            ]);
+            ])->header('Access-Control-Allow-Credentials', 'true');
         }
 
         return response()->json(['success' => false], 401);
@@ -26,9 +30,12 @@ class AdminApiController extends Controller
     public function check()
     {
         if (Auth::guard('admin')->check()) {
-            return response()->json(Auth::guard('admin')->user());
+            return response()->json([
+                'authenticated' => true,
+                'admin' => Auth::guard('admin')->user()
+            ]);
         }
-        return response()->json(null, 401);
+        return response()->json(['authenticated' => false], 401);
     }
 
     public function logout(Request $request)
